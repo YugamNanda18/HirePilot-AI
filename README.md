@@ -15,7 +15,7 @@
 
 ## 🌐 Live Demo
 
-👉 https://gen-ai-project-full-stack.vercel.app
+👉 https://hirepilot-ai-puwx.onrender.com/
 
 ---
 
