@@ -76,12 +76,6 @@ VITE_API_URL=https://your-backend-url.onrender.com
 
 ---
 
-## 📬 Connect With Me
-
-🐙 GitHub: https://github.com/varis131
-📧 Email: [movaris85@gmail.com](mailto:movaris85@gmail.com)
-
----
 
 ## ⭐ Support
 
@@ -89,4 +83,4 @@ If you like this project, give it a ⭐
 
 ---
 
-**Made with ❤️ by Varis**
+
