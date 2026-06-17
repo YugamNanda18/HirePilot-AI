@@ -11,10 +11,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      /\.vercel\.app$/, // 🔥 ALL vercel domains allowed
+      "https://hirepilot-ai-puwx.onrender.com",
     ],
     credentials: true,
-  }),
+  })
 );
 
 //middleware
