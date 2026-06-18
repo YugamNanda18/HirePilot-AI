@@ -70,7 +70,7 @@ Job description:
 The JSON MUST strictly follow this structure (field names and types):
 
 {
-  "matchScore": 88, // number between 0 and 100
+  "matchScore": 0, // number between 0 and 100
   "technicalQuestions": [
     {
       "question": "Explain the concept of reconciliation in React and how the Virtual DOM facilitates this process.",
@@ -109,6 +109,10 @@ Generation rules:
 - Every item in "technicalQuestions" and "behavioralQuestions" MUST include a detailed "intention" and a practical, step-by-step "answer".
 - Always infer a meaningful "title" from the job description.
 - Do NOT add any extra fields or text outside the JSON.`
+- Calculate matchScore dynamically based on resume and job description.
+- Never use a fixed score.
+- Different resumes must produce different scores.
+- Base scoring on skills, projects, experience and keyword alignment.
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
