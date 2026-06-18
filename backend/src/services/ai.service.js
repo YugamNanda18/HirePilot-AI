@@ -19,8 +19,9 @@ const interviewReportSchema = z.object({
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
     })).min(1).describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
     skillGaps: z.array(z.object({
-    skill: z.string().describe("The skill which the candidate is lacking"),
-   
+        skill: z.string().describe("The skill which the candidate is lacking"),
+        severity: z.enum([ "low", "medium", "high" ]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
+    })).min(1).describe("List of skill gaps in the candidate's profile along with their severity"),
     preparationPlan: z.array(z.object({
         day: z.number().describe("The day number in the preparation plan, starting from 1"),
         focus: z.string().describe("The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc."),
@@ -54,41 +55,6 @@ async function parseJsonFromResponse(response) {
 }
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
-    const resumeLower = resume.toLowerCase();
-const jdLower = jobDescription.toLowerCase();
-
-const skills = [
-  "react",
-  "node",
-  "express",
-  "mongodb",
-  "mysql",
-  "javascript",
-  "typescript",
-  "python",
-  "java",
-  "c++",
-  "docker",
-  "aws",
-  "git",
-  "jwt",
-  "rest api",
-  "redis",
-  "ci/cd"
-];
-
-const requiredSkills = skills.filter(skill =>
-  jdLower.includes(skill)
-);
-
-const matchedSkills = requiredSkills.filter(skill =>
-  resumeLower.includes(skill)
-);
-
-const calculatedScore =
-  requiredSkills.length > 0
-    ? Math.round((matchedSkills.length / requiredSkills.length) * 100)
-    : 70;
     const prompt = `You are an expert technical interviewer and career coach.
 Using ONLY the information below, generate a JSON interview report.
 
@@ -100,17 +66,11 @@ Self description:
 
 Job description:
 """${jobDescription}"""
-Calculated ATS Score: ${calculatedScore}
 
-Matched Skills:
-${matchedSkills.join(", ")}
-
-Missing Skills:
-${requiredSkills.filter(skill => !matchedSkills.includes(skill)).join(", ")}
 The JSON MUST strictly follow this structure (field names and types):
 
 {
-  "matchScore": 0, // number between 0 and 100
+  "matchScore": 88, // number between 0 and 100
   "technicalQuestions": [
     {
       "question": "Explain the concept of reconciliation in React and how the Virtual DOM facilitates this process.",
@@ -148,20 +108,6 @@ Generation rules:
 - Fill ALL fields with concrete, helpful content based on the resume and job description.
 - Every item in "technicalQuestions" and "behavioralQuestions" MUST include a detailed "intention" and a practical, step-by-step "answer".
 - Always infer a meaningful "title" from the job description.
-- Calculate matchScore dynamically based on the candidate's resume, self-description, and job description.
-- Never use a fixed score.
-- Different resumes and job descriptions must produce different scores.
-- Use the provided Calculated ATS Score as the matchScore value.
-- Use Missing Skills when generating skill gaps.
-- Generate technical questions based on resume projects and matched skills.
-- Base scoring on skills alignment, project relevance, experience, education, technologies, and keyword match.
-- Strong match: 80-100.
-- Moderate match: 60-79.
-- Weak match: below 60.
-- For every skill gap, severity MUST be exactly one of:
-  "low", "medium", or "high".
-- Do not use any other values such as High, Medium, Low, critical, severe, important, moderate, or strong.
-- Return only lowercase values: low, medium, high.
 - Do NOT add any extra fields or text outside the JSON.`
 
     const response = await ai.models.generateContent({
