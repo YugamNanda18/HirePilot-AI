@@ -112,7 +112,7 @@ Generation rules:
 - Calculate matchScore dynamically based on resume and job description.
 - Never use a fixed score.
 - Different resumes must produce different scores.
-- Base scoring on skills, projects, experience and keyword alignment.
+- Base scoring on skills, projects, experience and keyword alignment.`
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
