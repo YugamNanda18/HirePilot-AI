@@ -19,9 +19,8 @@ const interviewReportSchema = z.object({
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
     })).min(1).describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
     skillGaps: z.array(z.object({
-        skill: z.string().describe("The skill which the candidate is lacking"),
-        severity: z.enum([ "low", "medium", "high" ]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
-    })).min(1).describe("List of skill gaps in the candidate's profile along with their severity"),
+    skill: z.string().describe("The skill which the candidate is lacking"),
+   
     preparationPlan: z.array(z.object({
         day: z.number().describe("The day number in the preparation plan, starting from 1"),
         focus: z.string().describe("The main focus of this day in the preparation plan, e.g. data structures, system design, mock interviews etc."),
@@ -159,6 +158,10 @@ Generation rules:
 - Strong match: 80-100.
 - Moderate match: 60-79.
 - Weak match: below 60.
+- For every skill gap, severity MUST be exactly one of:
+  "low", "medium", or "high".
+- Do not use any other values such as High, Medium, Low, critical, severe, important, moderate, or strong.
+- Return only lowercase values: low, medium, high.
 - Do NOT add any extra fields or text outside the JSON.`
 
     const response = await ai.models.generateContent({
