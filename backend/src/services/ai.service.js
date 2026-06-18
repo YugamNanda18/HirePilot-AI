@@ -55,6 +55,41 @@ async function parseJsonFromResponse(response) {
 }
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
+    const resumeLower = resume.toLowerCase();
+const jdLower = jobDescription.toLowerCase();
+
+const skills = [
+  "react",
+  "node",
+  "express",
+  "mongodb",
+  "mysql",
+  "javascript",
+  "typescript",
+  "python",
+  "java",
+  "c++",
+  "docker",
+  "aws",
+  "git",
+  "jwt",
+  "rest api",
+  "redis",
+  "ci/cd"
+];
+
+const requiredSkills = skills.filter(skill =>
+  jdLower.includes(skill)
+);
+
+const matchedSkills = requiredSkills.filter(skill =>
+  resumeLower.includes(skill)
+);
+
+const calculatedScore =
+  requiredSkills.length > 0
+    ? Math.round((matchedSkills.length / requiredSkills.length) * 100)
+    : 70;
     const prompt = `You are an expert technical interviewer and career coach.
 Using ONLY the information below, generate a JSON interview report.
 
@@ -66,7 +101,13 @@ Self description:
 
 Job description:
 """${jobDescription}"""
+Calculated ATS Score: ${calculatedScore}
 
+Matched Skills:
+${matchedSkills.join(", ")}
+
+Missing Skills:
+${requiredSkills.filter(skill => !matchedSkills.includes(skill)).join(", ")}
 The JSON MUST strictly follow this structure (field names and types):
 
 {
@@ -108,11 +149,17 @@ Generation rules:
 - Fill ALL fields with concrete, helpful content based on the resume and job description.
 - Every item in "technicalQuestions" and "behavioralQuestions" MUST include a detailed "intention" and a practical, step-by-step "answer".
 - Always infer a meaningful "title" from the job description.
-- Do NOT add any extra fields or text outside the JSON.`
-- Calculate matchScore dynamically based on resume and job description.
+- Calculate matchScore dynamically based on the candidate's resume, self-description, and job description.
 - Never use a fixed score.
-- Different resumes must produce different scores.
-- Base scoring on skills, projects, experience and keyword alignment.`
+- Different resumes and job descriptions must produce different scores.
+- Use the provided Calculated ATS Score as the matchScore value.
+- Use Missing Skills when generating skill gaps.
+- Generate technical questions based on resume projects and matched skills.
+- Base scoring on skills alignment, project relevance, experience, education, technologies, and keyword match.
+- Strong match: 80-100.
+- Moderate match: 60-79.
+- Weak match: below 60.
+- Do NOT add any extra fields or text outside the JSON.`
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
